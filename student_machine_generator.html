@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高级学生机器IP配置生成器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .file-upload:hover {
+            background: #e9ecef;
+            border-color: #764ba2;
+        }
+
+        .file-upload.dragover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+        }
+
+        .output-section {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .output-header h3 {
+            color: #3498db;
+            font-size: 1.3em;
+        }
+
+        #copyBtn {
+            background: #27ae60;
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        #copyBtn:hover {
+            background: #2ecc71;
+        }
+
+        #output {
+            background: #34495e;
+            padding: 20px;
+            border-radius: 10px;
+            white-space: pre-wrap;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 2px solid #3498db;
+        }
+
+        .stats {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid #3498db;
+        }
+
+        .stats h4 {
+            color: #2980b9;
+            margin-bottom: 10px;
+        }
+
+        .stats p {
+            color: #34495e;
+            margin: 5px 0;
+        }
+
+        .preview-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #e1e5e9;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .preview-item {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ffeaa7;
+            margin: 15px 0;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #c3e6cb;
+            margin: 15px 0;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+            margin: 15px 0;
+        }
+
+        .ip-range-preview {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+
+        .file-info {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #b3d9ff;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 高级学生机器IP配置生成器</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('generate')">🎯 生成配置</button>
+            <button class="tab" onclick="switchTab('replace')">🔄 替换配置</button>
+        </div>
+
+        <!-- 生成配置选项卡 -->
+        <div id="generateTab" class="tab-content active">
+            <div class="form-section">
+                <h3>🎛️ 配置参数</h3>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="groupName">组名称</label>
+                        <input type="text" id="groupName" value="学生" placeholder="例如: 学生">
+                    </div>
+                    <div class="form-group">
+                        <label for="parentUid">父级UUID (可选)</label>
+                        <input type="text" id="parentUid" placeholder="留空自动生成">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rangeMode">IP范围模式</label>
+                        <select id="rangeMode" onchange="toggleRangeMode()">
+                            <option value="simple">简单模式 (单网段)</option>
+                            <option value="advanced">高级模式 (跨网段)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 简单模式 -->
+                <div id="simpleMode">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="ipBase">IP网段基础</label>
+                            <input type="text" id="ipBase" value="192.168.2" placeholder="例如: 192.168.2">
+                        </div>
+                        <div class="form-group">
+                            <label for="startNum">起始编号</label>
+                            <input type="number" id="startNum" value="1" min="1" max="254">
+                        </div>
+                        <div class="form-group">
+                            <label for="endNum">结束编号</label>
+                            <input type="number" id="endNum" value="60" min="1" max="254">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 高级模式 -->
+                <div id="advancedMode" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="startIP">起始IP地址</label>
+                            <input type="text" id="startIP" value="192.168.1.1" placeholder="例如: 192.168.1.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="endIP">结束IP地址</label>
+                            <input type="text" id="endIP" value="192.168.3.255" placeholder="例如: 192.168.3.255">
+                        </div>
+                    </div>
+                    <div id="ipRangePreview" class="ip-range-preview" style="display: none;"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="namePrefix">名称前缀 (可选)</label>
+                        <input type="text" id="namePrefix" placeholder="留空使用数字编号">
+                    </div>
+                    <div class="form-group">
+                        <label for="skipIPs">跳过IP (用逗号分隔)</label>
+                        <textarea id="skipIPs" rows="3" placeholder="例如: 192.168.2.12,192.168.2.19"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button onclick="calculateRange()">📊 计算范围</button>
+                <button onclick="previewConfig()">👀 预览列表</button>
+                <button onclick="generateConfig()">🚀 生成配置</button>
+                <button onclick="clearAll()" class="danger-btn">🗑️ 清空</button>
+            </div>
+        </div>
+
+        <!-- 替换配置选项卡 -->
+        <div id="replaceTab" class="tab-content">
+            <div class="form-section">
+                <h3>📁 上传配置文件</h3>
+                
+                <div class="file-upload" id="fileUpload" onclick="document.getElementById('configFile').click()">
+                    <div>
+                        <h4>📤 点击或拖拽上传配置JSON文件</h4>
+                        <p>支持 .json 格式</p>
+                    </div>
+                    <input type="file" id="configFile" accept=".json" style="display: none;" onchange="handleFileUpload(event)">
+                </div>
+
+                <div id="fileInfo" class="file-info" style="display: none;">
+                    <h4>📋 文件信息</h4>
+                    <p id="fileName"></p>
+                    <p id="fileSize"></p>
+                    <p id="currentMachines"></p>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="replaceGroupName">新的组名称</label>
+                        <input type="text" id="replaceGroupName" value="学生" placeholder="例如: 学生">
+                    </div>
+                    <div class="form-group">
+                        <label for="replaceMode">替换模式</label>
+                        <select id="replaceMode">
+                            <option value="replace">完全替换</option>
+                            <option value="append">追加到现有</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button onclick="replaceAndDownload()" id="replaceBtn" disabled>🔄 替换并下载</button>
+                <button onclick="previewReplace()" id="previewReplaceBtn" disabled>👀 预览替换</button>
+            </div>
+        </div>
+
+        <div id="previewSection" class="preview-section" style="display: none;">
+            <h3>📋 预览列表</h3>
+            <div id="previewContent"></div>
+        </div>
+
+        <div class="output-section" style="display: none;" id="outputSection">
+            <div class="output-header">
+                <h3>💾 生成的JSON配置</h3>
+                <div>
+                    <button id="copyBtn" onclick="copyToClipboard()">📋 复制</button>
+                    <button class="download-btn" onclick="downloadJSON()">💾 下载JSON</button>
+                </div>
+            </div>
+            <div id="output"></div>
+            <div class="stats" id="statsSection"></div>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ 使用说明：</strong><br>
+            <strong>生成配置模式：</strong>支持简单单网段生成和高级跨网段生成<br>
+            <strong>替换配置模式：</strong>上传原始配置文件，自动替换学生机器配置<br>
+            <strong>高级功能：</strong>支持完全替换或追加模式，自动备份原始数据
+        </div>
+    </div>
+
+    <script>
+        let uploadedConfig = null;
+        let generatedArray = null;
+
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function switchTab(tabName) {
+            // 切换标签页
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        function toggleRangeMode() {
+            const mode = document.getElementById('rangeMode').value;
+            const simpleMode = document.getElementById('simpleMode');
+            const advancedMode = document.getElementById('advancedMode');
+            
+            if (mode === 'simple') {
+                simpleMode.style.display = 'block';
+                advancedMode.style.display = 'none';
+            } else {
+                simpleMode.style.display = 'none';
+                advancedMode.style.display = 'block';
+            }
+        }
+
+        function ipToNumber(ip) {
+            const parts = ip.split('.').map(Number);
+            return (parts[0] << 24) + (parts[1] << 16) + (parts[2] << 8) + parts[3];
+        }
+
+        function numberToIP(num) {
+            return [
+                (num >>> 24) & 255,
+                (num >>> 16) & 255,
+                (num >>> 8) & 255,
+                num & 255
+            ].join('.');
+        }
+
+        function generateIPRange(startIP, endIP) {
+            const start = ipToNumber(startIP);
+            const end = ipToNumber(endIP);
+            const ips = [];
+            
+            for (let i = start; i <= end; i++) {
+                const ip = numberToIP(i);
+                // 过滤掉网络地址和广播地址
+                const lastOctet = i & 255;
+                if (lastOctet !== 0 && lastOctet !== 255) {
+                    ips.push(ip);
+                }
+            }
+            
+            return ips;
+        }
+
+        function calculateRange() {
+            const mode = document.getElementById('rangeMode').value;
+            let ips = [];
+            
+            if (mode === 'simple') {
+                const ipBase = document.getElementById('ipBase').value.trim();
+                const startNum = parseInt(document.getElementById('startNum').value);
+                const endNum = parseInt(document.getElementById('endNum').value);
+                
+                if (!ipBase || startNum > endNum) {
+                    alert('请检查IP网段和编号范围！');
+                    return;
+                }
+                
+                for (let i = startNum; i <= endNum; i++) {
+                    ips.push(`${ipBase}.${i}`);
+                }
+            } else {
+                const startIP = document.getElementById('startIP').value.trim();
+                const endIP = document.getElementById('endIP').value.trim();
+                
+                if (!startIP || !endIP) {
+                    alert('请输入起始和结束IP地址！');
+                    return;
+                }
+                
+                try {
+                    ips = generateIPRange(startIP, endIP);
+                } catch (e) {
+                    alert('IP地址格式错误！');
+                    return;
+                }
+            }
+            
+            const skipIPs = document.getElementById('skipIPs').value.split(/[,\n]/).map(ip => ip.trim()).filter(ip => ip);
+            const validIPs = ips.filter(ip => !skipIPs.includes(ip));
+            
+            const preview = document.getElementById('ipRangePreview');
+            preview.innerHTML = `
+                <h4>📊 IP范围计算结果</h4>
+                <p><strong>总IP数量:</strong> ${ips.length}</p>
+                <p><strong>跳过数量:</strong> ${ips.length - validIPs.length}</p>
+                <p><strong>有效IP数量:</strong> ${validIPs.length}</p>
+                <p><strong>示例IP:</strong> ${validIPs.slice(0, 5).join(', ')}${validIPs.length > 5 ? ' ...' : ''}</p>
+            `;
+            preview.style.display = 'block';
+        }
+
+        function previewConfig() {
+            const mode = document.getElementById('rangeMode').value;
+            const namePrefix = document.getElementById('namePrefix').value.trim();
+            const skipIPs = document.getElementById('skipIPs').value.split(/[,\n]/).map(ip => ip.trim()).filter(ip => ip);
+            
+            let ips = [];
+            
+            if (mode === 'simple') {
+                const ipBase = document.getElementById('ipBase').value.trim();
+                const startNum = parseInt(document.getElementById('startNum').value);
+                const endNum = parseInt(document.getElementById('endNum').value);
+                
+                if (!ipBase || startNum > endNum) {
+                    alert('请检查IP网段和编号范围！');
+                    return;
+                }
+                
+                for (let i = startNum; i <= endNum; i++) {
+                    ips.push(`${ipBase}.${i}`);
+                }
+            } else {
+                const startIP = document.getElementById('startIP').value.trim();
+                const endIP = document.getElementById('endIP').value.trim();
+                
+                if (!startIP || !endIP) {
+                    alert('请输入起始和结束IP地址！');
+                    return;
+                }
+                
+                try {
+                    ips = generateIPRange(startIP, endIP);
+                } catch (e) {
+                    alert('IP地址格式错误！');
+                    return;
+                }
+            }
+
+            const previewSection = document.getElementById('previewSection');
+            const previewContent = document.getElementById('previewContent');
+            
+            let previewHTML = '';
+            let counter = 1;
+
+            for (const ip of ips) {
+                if (skipIPs.includes(ip)) continue;
+                
+                const name = namePrefix ? `${namePrefix}${counter}` : counter.toString();
+                previewHTML += `<div class="preview-item">📱 ${name} → ${ip}</div>`;
+                counter++;
+                
+                // 限制预览数量
+                if (counter > 100) {
+                    previewHTML += `<div class="preview-item">... 还有 ${ips.length - skipIPs.length - 100} 台机器</div>`;
+                    break;
+                }
+            }
+
+            previewContent.innerHTML = previewHTML;
+            previewSection.style.display = 'block';
+        }
+
+        function generateConfig() {
+            const groupName = document.getElementById('groupName').value.trim() || '学生';
+            const mode = document.getElementById('rangeMode').value;
+            const namePrefix = document.getElementById('namePrefix').value.trim();
+            const skipIPs = document.getElementById('skipIPs').value.split(/[,\n]/).map(ip => ip.trim()).filter(ip => ip);
+            let parentUid = document.getElementById('parentUid').value.trim();
+
+            let ips = [];
+            
+            if (mode === 'simple') {
+                const ipBase = document.getElementById('ipBase').value.trim();
+                const startNum = parseInt(document.getElementById('startNum').value);
+                const endNum = parseInt(document.getElementById('endNum').value);
+                
+                if (!ipBase || startNum > endNum) {
+                    alert('请检查IP网段和编号范围！');
+                    return;
+                }
+                
+                for (let i = startNum; i <= endNum; i++) {
+                    ips.push(`${ipBase}.${i}`);
+                }
+            } else {
+                const startIP = document.getElementById('startIP').value.trim();
+                const endIP = document.getElementById('endIP').value.trim();
+                
+                if (!startIP || !endIP) {
+                    alert('请输入起始和结束IP地址！');
+                    return;
+                }
+                
+                try {
+                    ips = generateIPRange(startIP, endIP);
+                } catch (e) {
+                    alert('IP地址格式错误！');
+                    return;
+                }
+            }
+
+            if (!parentUid) {
+                parentUid = `{${generateUUID()}}`;
+            } else if (!parentUid.startsWith('{')) {
+                parentUid = `{${parentUid}}`;
+            }
+
+            const jsonArray = [];
+
+            // 添加父级组
+            jsonArray.push({
+                "Name": groupName,
+                "Type": 2,
+                "Uid": parentUid
+            });
+
+            // 添加所有机器
+            let counter = 1;
+            for (const ip of ips) {
+                if (skipIPs.includes(ip)) continue;
+
+                const name = namePrefix ? `${namePrefix}${counter}` : counter.toString();
+                
+                jsonArray.push({
+                    "HostAddress": ip,
+                    "Name": name,
+                    "ParentUid": parentUid,
+                    "Type": 3,
+                    "Uid": `{${generateUUID()}}`
+                });
+                counter++;
+            }
+
+            generatedArray = jsonArray;
+            const outputJson = JSON.stringify(jsonArray, null, 4);
+            document.getElementById('output').textContent = outputJson;
+            document.getElementById('outputSection').style.display = 'block';
+
+            // 显示统计信息
+            const totalMachines = jsonArray.length - 1; // 减去父级组
+            const skippedCount = skipIPs.filter(ip => ips.includes(ip)).length;
+
+            document.getElementById('statsSection').innerHTML = `
+                <h4>📊 生成统计</h4>
+                <p><strong>组名称:</strong> ${groupName}</p>
+                <p><strong>IP范围:</strong> ${mode === 'simple' ? `${document.getElementById('ipBase').value}.${document.getElementById('startNum').value} - ${document.getElementById('ipBase').value}.${document.getElementById('endNum').value}` : `${document.getElementById('startIP').value} - ${document.getElementById('endIP').value}`}</p>
+                <p><strong>生成机器数:</strong> ${totalMachines} 台</p>
+                <p><strong>跳过IP数:</strong> ${skippedCount} 个</p>
+                <p><strong>父级UUID:</strong> ${parentUid}</p>
+            `;
+
+            // 滚动到输出区域
+            document.getElementById('outputSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('output');
+            const textArea = document.createElement('textarea');
+            textArea.value = output.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            const copyBtn = document.getElementById('copyBtn');
+            const originalText = copyBtn.textContent;
+            copyBtn.textContent = '✅ 已复制';
+            copyBtn.style.background = '#27ae60';
+            
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.style.background = '#27ae60';
+            }, 2000);
+        }
+
+        function downloadJSON() {
+            const content = document.getElementById('output').textContent;
+            const blob = new Blob([content], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `student_machines_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAll() {
+            document.getElementById('output').textContent = '';
+            document.getElementById('outputSection').style.display = 'none';
+            document.getElementById('previewSection').style.display = 'none';
+            document.getElementById('ipRangePreview').style.display = 'none';
+            document.getElementById('groupName').value = '学生';
+            document.getElementById('ipBase').value = '192.168.2';
+            document.getElementById('startNum').value = '1';
+            document.getElementById('endNum').value = '60';
+            document.getElementById('startIP').value = '192.168.1.1';
+            document.getElementById('endIP').value = '192.168.3.255';
+            document.getElementById('parentUid').value = '';
+            document.getElementById('namePrefix').value = '';
+            document.getElementById('skipIPs').value = '';
+            generatedArray = null;
+        }
+
+        // 文件处理功能
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    uploadedConfig = JSON.parse(e.target.result);
+                    displayFileInfo(file, uploadedConfig);
+                    document.getElementById('replaceBtn').disabled = false;
+                    document.getElementById('previewReplaceBtn').disabled = false;
+                } catch (error) {
+                    alert('JSON文件格式错误！请检查文件格式。');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function displayFileInfo(file, config) {
+            const fileInfo = document.getElementById('fileInfo');
+            const currentMachines = config?.BuiltinDirectory?.NetworkObjects?.JsonStoreArray?.length || 0;
+            
+            document.getElementById('fileName').textContent = `文件名: ${file.name}`;
+            document.getElementById('fileSize').textContent = `文件大小: ${(file.size / 1024).toFixed(2)} KB`;
+            document.getElementById('currentMachines').textContent = `当前机器数量: ${currentMachines}`;
+            
+            fileInfo.style.display = 'block';
+        }
+
+        function previewReplace() {
+            if (!uploadedConfig) {
+                alert('请先上传配置文件！');
+                return;
+            }
+
+            // 先生成新的配置
+            generateConfig();
+            
+            if (!generatedArray) {
+                alert('请先生成配置！');
+                return;
+            }
+
+            const replaceMode = document.getElementById('replaceMode').value;
+            const currentArray = uploadedConfig?.BuiltinDirectory?.NetworkObjects?.JsonStoreArray || [];
+            
+            let newArray = [];
+            if (replaceMode === 'replace') {
+                newArray = generatedArray;
+            } else {
+                // 追加模式：保留现有的，添加新的
+                newArray = [...currentArray, ...generatedArray];
+            }
+
+            const previewSection = document.getElementById('previewSection');
+            const previewContent = document.getElementById('previewContent');
+            
+            let previewHTML = `
+                <div class="warning">
+                    <strong>${replaceMode === 'replace' ? '完全替换' : '追加'}模式预览</strong><br>
+                    原有机器数: ${currentArray.length}<br>
+                    新增机器数: ${generatedArray.length}<br>
+                    最终机器数: ${newArray.length}
+                </div>
+            `;
+
+            // 显示前20个条目
+            for (let i = 0; i < Math.min(newArray.length, 20); i++) {
+                const item = newArray[i];
+                if (item.Type === 2) {
+                    previewHTML += `<div class="preview-item">📁 组: ${item.Name} (${item.Uid})</div>`;
+                } else {
+                    previewHTML += `<div class="preview-item">📱 ${item.Name} → ${item.HostAddress}</div>`;
+                }
+            }
+
+            if (newArray.length > 20) {
+                previewHTML += `<div class="preview-item">... 还有 ${newArray.length - 20} 个项目</div>`;
+            }
+
+            previewContent.innerHTML = previewHTML;
+            previewSection.style.display = 'block';
+        }
+
+        function replaceAndDownload() {
+            if (!uploadedConfig) {
+                alert('请先上传配置文件！');
+                return;
+            }
+
+            // 先生成新的配置
+            generateConfig();
+            
+            if (!generatedArray) {
+                alert('请先生成配置！');
+                return;
+            }
+
+            const replaceMode = document.getElementById('replaceMode').value;
+            const currentArray = uploadedConfig?.BuiltinDirectory?.NetworkObjects?.JsonStoreArray || [];
+            
+            // 创建新的配置副本
+            const newConfig = JSON.parse(JSON.stringify(uploadedConfig));
+            
+            if (replaceMode === 'replace') {
+                newConfig.BuiltinDirectory.NetworkObjects.JsonStoreArray = generatedArray;
+            } else {
+                // 追加模式
+                newConfig.BuiltinDirectory.NetworkObjects.JsonStoreArray = [...currentArray, ...generatedArray];
+            }
+
+            // 下载新配置
+            const configJson = JSON.stringify(newConfig, null, 4);
+            const blob = new Blob([configJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `config_updated_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            // 显示成功消息
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.innerHTML = `
+                <strong>✅ 配置文件已成功生成并下载！</strong><br>
+                替换模式: ${replaceMode === 'replace' ? '完全替换' : '追加模式'}<br>
+                最终机器数量: ${newConfig.BuiltinDirectory.NetworkObjects.JsonStoreArray.length}
+            `;
+            
+            document.querySelector('.container').insertBefore(successDiv, document.getElementById('previewSection'));
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+
+        // 拖拽上传功能
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileUpload = document.getElementById('fileUpload');
+            
+            fileUpload.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                fileUpload.classList.add('dragover');
+            });
+            
+            fileUpload.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+            });
+            
+            fileUpload.addEventListener('drop', function(e) {
+                e.preventDefault();
+                fileUpload.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('configFile').files = files;
+                    handleFileUpload({ target: { files: files } });
+                }
+            });
+
+            // 高级模式IP地址输入验证
+            document.getElementById('startIP').addEventListener('input', calculateRange);
+            document.getElementById('endIP').addEventListener('input', calculateRange);
+        });
+    </script>
+</body>
+</html>
